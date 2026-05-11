@@ -70,4 +70,3 @@ These paths will be used by the detector modules.
 - Implement the actual model loading and prediction logic inside the detector modules.
 - Connect real GIS/location data to DBSCAN clustering.
 - Integrate a frontend (Django templates or SPA) with live maps and dashboards.
-

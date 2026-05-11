@@ -1,13 +1,11 @@
-# Resq backend – install these first (works on Python 3.14)
-django>=5.0,<6.0
-djangorestframework>=3.15,<4.0
-django-cors-headers>=4.3,<5
-requests>=2.32
+# Resq backend – Vercel deployment
+django>=4.2,<5.0
+djangorestframework>=3.14,<4.0
+django-cors-headers>=4.3,<5.0
+requests>=2.31
 python-dotenv>=1.0
-waitress>=3.0,<4.0
-psycopg[binary]>=3.2,<4.0
 
-# Production dependencies
+# Vercel deployment
 gunicorn==21.2.0
 whitenoise==6.6.0
 
@@ -17,6 +15,6 @@ whitenoise==6.6.0
 # scikit-learn>=1.4
 
 # Optional: TensorFlow/PyTorch – not needed for Resq API (detectors run via subprocess).
-# If you run the detector scripts in AI_Based_Disaster_Relief_And_Management_System, use Python 3.11/3.12 and:
+# If you run the detector scripts, use Python 3.11/3.12 and:
 # pip install tensorflow opencv-python
 # pip install torch torchvision

@@ -70,3 +70,56 @@ These paths will be used by the detector modules.
 - Implement the actual model loading and prediction logic inside the detector modules.
 - Connect real GIS/location data to DBSCAN clustering.
 - Integrate a frontend (Django templates or SPA) with live maps and dashboards.
+
+## Deployment
+
+### Frontend (Netlify)
+
+1. **Connect GitHub repository** to Netlify
+2. **Build settings** (auto-detected from `netlify.toml`):
+   - Base directory: `frontend`
+   - Build command: `npm install && npm run build`
+   - Publish directory: `dist`
+3. **Environment variables**:
+   - `VITE_API_BASE_URL`: `https://your-render-app.onrender.com/api`
+
+### Backend (Render)
+
+1. **Create new Web Service** on Render
+2. **Connect GitHub repository**
+3. **Configure service**:
+   - Runtime: `Python 3`
+   - Build Command: `./build.sh`
+   - Start Command: `gunicorn resq.wsgi:application --bind 0.0.0.0:$PORT`
+4. **Add PostgreSQL database** (Render will create it automatically)
+5. **Environment variables**:
+   - `RESQ_DEBUG`: `false`
+   - `RESQ_SECRET_KEY`: Generate a new secret key
+   - `DATABASE_URL`: Provided by Render's PostgreSQL
+   - `RESQ_CORS_ORIGINS`: `https://your-netlify-site.netlify.app`
+   - `RESQ_ALLOWED_HOSTS`: `your-render-app.onrender.com`
+
+### Alternative: Manual Render Deployment
+
+If you prefer manual setup:
+
+1. **Create Render account** and PostgreSQL database
+2. **Clone/copy the backend code** to a separate repository
+3. **Set environment variables** as shown in `.env.production.example`
+4. **Deploy using the Procfile** configuration
+
+## Environment Variables
+
+Copy `.env.production.example` to `.env` and fill in your values:
+
+```bash
+# Backend
+RESQ_SECRET_KEY=your-secret-key
+RESQ_DEBUG=false
+DATABASE_URL=postgresql://...
+RESQ_CORS_ORIGINS=https://your-frontend.netlify.app
+RESQ_ALLOWED_HOSTS=your-backend.onrender.com
+
+# Frontend
+VITE_API_BASE_URL=https://your-backend.onrender.com/api
+```

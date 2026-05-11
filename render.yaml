@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: resq-backend
+    runtime: python3
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn resq.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: RESQ_DEBUG
+        value: false
+      - key: RESQ_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          type: postgresql
+          name: resq-db
+      - key: RESQ_CORS_ORIGINS
+        value: https://your-netlify-site.netlify.app
+      - key: RESQ_ALLOWED_HOSTS
+        value: resq-backend.onrender.com
+
+databases:
+  - type: postgresql
+    name: resq-db
+    ipAllowList: []

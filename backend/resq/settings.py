@@ -1,4 +1,5 @@
 import os
+import importlib.util
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -18,6 +19,7 @@ SECRET_KEY = os.environ.get("RESQ_SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = env_bool("RESQ_DEBUG", True)
 
 ALLOWED_HOSTS = env_list("RESQ_ALLOWED_HOSTS", "*" if DEBUG else "")
+HAS_WHITENOISE = importlib.util.find_spec("whitenoise") is not None
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -35,7 +37,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Add whitenoise for static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -44,6 +45,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if HAS_WHITENOISE:
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 ROOT_URLCONF = "resq.urls"
 
@@ -99,33 +103,18 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# WhiteNoise settings
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-# CORS Configuration
-CORS_ALLOWED_ORIGINS = env_list(
-    "RESQ_CORS_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
-)
-CORS_ALLOW_CREDENTIALS = True
-
-# Allow all origins in development, restrict in production
-if not DEBUG:
-    CORS_ALLOWED_ORIGINS = env_list("RESQ_CORS_ORIGINS", "")
+if HAS_WHITENOISE:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (uploaded images/videos)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# CORS settings - allow file uploads from the configured dashboard hosts.
+# CORS settings - allow the dashboard hosts (dev servers) to call the API with credentials.
 CORS_ALLOWED_ORIGINS = env_list(
     "RESQ_CORS_ALLOWED_ORIGINS",
     "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173",
 )
-
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env_list("RESQ_CSRF_TRUSTED_ORIGINS")
@@ -139,3 +128,12 @@ SECURE_HSTS_PRELOAD = env_bool("RESQ_SECURE_HSTS_PRELOAD", False)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "detection_api.authentication.CsrfExemptSessionAuthentication",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 50,
+}

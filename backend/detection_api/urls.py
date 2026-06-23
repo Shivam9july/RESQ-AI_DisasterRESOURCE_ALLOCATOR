@@ -15,5 +15,7 @@ urlpatterns = [
     ),
     path("detect/upload/", views.FileUploadDetectionView.as_view(), name="detect-upload"),
     path("incidents/", views.IncidentListView.as_view(), name="incident-list"),
+    path("incidents/stats/", views.IncidentStatsView.as_view(), name="incident-stats"),
+    path("incidents/<int:pk>/", views.IncidentDetailView.as_view(), name="incident-detail"),
 ]
 

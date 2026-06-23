@@ -38,6 +38,11 @@ def serialize_operator(user):
     }
 
 
+def health_check(request):
+    """Unauthenticated liveness probe used by Render/uptime monitors."""
+    return JsonResponse({"status": "ok", "service": "resq-api"})
+
+
 @method_decorator(csrf_exempt, name="dispatch")
 class LoginView(APIView):
     authentication_classes = []

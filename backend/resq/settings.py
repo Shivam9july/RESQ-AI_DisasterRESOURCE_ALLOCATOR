@@ -127,6 +127,13 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("RESQ_SECURE_HSTS_INCLUDE_SUBDOMAINS",
 SECURE_HSTS_PRELOAD = env_bool("RESQ_SECURE_HSTS_PRELOAD", False)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+# Cross-origin session cookies (frontend on Vercel -> backend on Render).
+# When deployed to production, cookies must be SameSite=None + Secure so the
+# browser sends them on cross-site requests. In local dev we keep them SameSite=Lax.
+if not DEBUG:
+    SESSION_COOKIE_SAMESITE = "None"
+    CSRF_COOKIE_SAMESITE = "None"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Django REST Framework

@@ -1,7 +1,14 @@
 #!/bin/bash
+# Render build script — runs from the repository root.
+set -e
 
-# Collect static files
+echo "==> Installing Python dependencies"
+pip install -r requirements.txt
+
+echo "==> Collecting static files"
 python backend/manage.py collectstatic --noinput
 
-# Run migrations
-python backend/manage.py migrate
+echo "==> Running database migrations"
+python backend/manage.py migrate --noinput
+
+echo "==> Build complete"

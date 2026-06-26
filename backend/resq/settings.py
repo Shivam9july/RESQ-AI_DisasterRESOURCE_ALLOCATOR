@@ -18,7 +18,9 @@ SECRET_KEY = os.environ.get("RESQ_SECRET_KEY", "dev-secret-key-change-me")
 
 DEBUG = env_bool("RESQ_DEBUG", True)
 
-ALLOWED_HOSTS = env_list("RESQ_ALLOWED_HOSTS", "*" if DEBUG else "")
+# Always allow Render's internal hosts (.onrender.com) and localhost so the
+# internal health check succeeds even before RESQ_ALLOWED_HOSTS is configured.
+ALLOWED_HOSTS = env_list("RESQ_ALLOWED_HOSTS", "*" if DEBUG else ".onrender.com,localhost,127.0.0.1")
 HAS_WHITENOISE = importlib.util.find_spec("whitenoise") is not None
 
 INSTALLED_APPS = [
@@ -119,7 +121,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env_list("RESQ_CSRF_TRUSTED_ORIGINS")
 
-SECURE_SSL_REDIRECT = env_bool("RESQ_SECURE_SSL_REDIRECT", not DEBUG)
+# NOTE: Render terminates TLS at its proxy and performs internal health checks
+# over plain HTTP, so we must NOT force SSL redirect here (it causes a redirect
+# loop that fails the deploy health check). Set RESQ_SECURE_SSL_REDIRECT=true
+# only if you run behind your own proxy that sets X-Forwarded-Proto.
+SECURE_SSL_REDIRECT = env_bool("RESQ_SECURE_SSL_REDIRECT", False)
 SESSION_COOKIE_SECURE = env_bool("RESQ_SESSION_COOKIE_SECURE", not DEBUG)
 CSRF_COOKIE_SECURE = env_bool("RESQ_CSRF_COOKIE_SECURE", not DEBUG)
 SECURE_HSTS_SECONDS = int(os.environ.get("RESQ_SECURE_HSTS_SECONDS", "0" if DEBUG else "31536000"))

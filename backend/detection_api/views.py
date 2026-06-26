@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncDate
+from django.http import JsonResponse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
